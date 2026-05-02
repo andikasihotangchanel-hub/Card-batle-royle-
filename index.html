@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Card Battle Royale Mabar</title>
+<style>
+body { margin:0; overflow:hidden; background:#111; color:white; font-family:sans-serif;}
+#menu {position:absolute; top:0; left:0; width:100%; height:100%; background:#000; display:flex; flex-direction:column; align-items:center; justify-content:center;}
+canvas { display:block; }
+
+input, textarea, button {
+  margin:5px;
+  padding:10px;
+  border-radius:10px;
+  border:none;
+}
+
+#joystick {
+  position:absolute;
+  bottom:80px;
+  left:30px;
+  width:100px;
+  height:100px;
+  background:rgba(255,255,255,0.1);
+  border-radius:50%;
+}
+
+#stick {
+  width:40px;
+  height:40px;
+  background:white;
+  border-radius:50%;
+  position:absolute;
+  left:30px;
+  top:30px;
+}
+
+#bagBtn {
+  position:absolute;
+  bottom:90px;
+  left:150px;
+  padding:15px;
+  background:orange;
+  border-radius:10px;
+}
+
+#skills {
+  position:absolute;
+  bottom:150px;
+  left:150px;
+  background:#222;
+  padding:10px;
+  display:none;
+}
+</style>
+</head>
+
+<body>
+
+<div id="menu">
+  <h1>Card Battle Royale</h1>
+  <input type="file" id="imgInput">
+  <input type="text" id="nameInput" placeholder="Nama karakter">
+  <textarea id="powerInput" placeholder="Deskripsi kekuatan"></textarea>
+  <button onclick="startGame()">Mulai</button>
+</div>
+
+<canvas id="game"></canvas>
+
+<div id="joystick"><div id="stick"></div></div>
+<button id="bagBtn">🎒</button>
+<div id="skills"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
+import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: firebase
+  authDomain: card batle royle 
+  databaseURL: "https://game-card-batle-royle-default-rtdb.firebaseio.com/",
+  projectId: "game-card-batle-royle",
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+const playerId = "player_" + Math.random().toString(36).substr(2, 9);
+
+let canvas = document.getElementById("game");
+let ctx = canvas.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let players = {};
+let myData = {x:200, y:200, name:"", power:"", img:null};
+
+// 🎮 Upload gambar
+document.getElementById("imgInput").onchange = e => {
+  let file = e.target.files[0];
+  let reader = new FileReader();
+  reader.onload = () => {
+    let img = new Image();
+    img.src = reader.result;
+    myData.img = img;
+  };
+  reader.readAsDataURL(file);
+};
+
+// ▶️ Start game
+window.startGame = () => {
+  myData.name = document.getElementById("nameInput").value;
+  myData.power = document.getElementById("powerInput").value;
+
+  document.getElementById("menu").style.display = "none";
+
+  setInterval(update, 1000/60);
+};
+
+// 🔄 Update ke Firebase
+function sendData(){
+  set(ref(db, "players/" + playerId), {
+    x: myData.x,
+    y: myData.y,
+    name: myData.name,
+    power: myData.power
+  });
+}
+
+// 👀 Ambil data player lain
+onValue(ref(db, "players"), snapshot=>{
+  players = snapshot.val() || {};
+});
+
+// 🎮 Render
+function update(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  sendData();
+
+  for(let id in players){
+    let p = players[id];
+
+    ctx.fillStyle = id === playerId ? "lime" : "red";
+    ctx.fillRect(p.x, p.y, 50, 50);
+
+    ctx.fillStyle = "white";
+    ctx.fillText(p.name, p.x, p.y - 10);
+  }
+}
+
+// 🕹️ JOYSTICK
+let stick = document.getElementById("stick");
+let joy = document.getElementById("joystick");
+
+let dragging = false;
+
+joy.addEventListener("touchstart", ()=> dragging=true);
+joy.addEventListener("touchend", ()=>{
+  dragging=false;
+  stick.style.left="30px";
+  stick.style.top="30px";
+});
+
+joy.addEventListener("touchmove", e=>{
+  if(!dragging) return;
+
+  let rect = joy.getBoundingClientRect();
+  let x = e.touches[0].clientX - rect.left;
+  let y = e.touches[0].clientY - rect.top;
+
+  stick.style.left = (x-20)+"px";
+  stick.style.top = (y-20)+"px";
+
+  myData.x += (x-50)/20;
+  myData.y += (y-50)/20;
+});
+
+// 🎒 BAG SKILL
+let bag = document.getElementById("bagBtn");
+let skills = document.getElementById("skills");
+
+bag.onclick = ()=>{
+  skills.style.display = skills.style.display==="none" ? "block" : "none";
+
+  skills.innerHTML = "";
+  let words = myData.power.split(" ");
+
+  words.forEach(w=>{
+    let btn = document.createElement("button");
+    btn.innerText = w;
+
+    btn.onclick = ()=>{
+      alert("Serang pakai: " + w);
+    };
+
+    skills.appendChild(btn);
+  });
+};
+</script>
+
+</body>
+  </html>
