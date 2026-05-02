@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+};<!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
@@ -75,6 +75,9 @@ input, textarea, button {
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
 import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-database.js";
 
+let gameStarted = false;
+let teamAssigned = false;
+  
 const firebaseConfig = {
   apiKey: firebase
   authDomain: card batle royle 
@@ -96,6 +99,34 @@ canvas.height = window.innerHeight;
 let players = {};
 let myData = {x:200, y:200, name:"", power:"", img:null};
 
+function assignTeam(){
+  const teamRef = ref(db, "game/team");
+
+  onValue(teamRef, snapshot=>{
+    let data = snapshot.val();
+
+    if(!data){
+      // Player pertama
+      let team = Math.random() > 0.5 ? "red" : "blue";
+
+      set(teamRef, {
+        p1: team,
+        p2: team === "red" ? "blue" : "red"
+      });
+
+      myData.team = team;
+    } else {
+      // Player kedua
+      if(!teamAssigned){
+        myData.team = data.p2;
+        teamAssigned = true;
+      }
+    }
+
+    setSpawn();
+  });
+}
+  
 // 🎮 Upload gambar
 document.getElementById("imgInput").onchange = e => {
   let file = e.target.files[0];
@@ -106,7 +137,7 @@ document.getElementById("imgInput").onchange = e => {
     myData.img = img;
   };
   reader.readAsDataURL(file);
-};
+
 
 // ▶️ Start game
 window.startGame = () => {
@@ -114,6 +145,8 @@ window.startGame = () => {
   myData.power = document.getElementById("powerInput").value;
 
   document.getElementById("menu").style.display = "none";
+
+  assignTeam();
 
   setInterval(update, 1000/60);
 };
@@ -124,9 +157,20 @@ function sendData(){
     x: myData.x,
     y: myData.y,
     name: myData.name,
-    power: myData.power
+    power: myData.power,
+    team: myData.team || "none"
   });
 }
+
+  function setSpawn(){
+  if(myData.team === "blue"){
+    myData.x = 100;
+    myData.y = canvas.height - 150;
+  } else {
+    myData.x = canvas.width - 150;
+    myData.y = 100;
+  }
+  }
 
 // 👀 Ambil data player lain
 onValue(ref(db, "players"), snapshot=>{
@@ -198,6 +242,44 @@ bag.onclick = ()=>{
     skills.appendChild(btn);
   });
 };
+  
+//==== UPDATE ====
+function update(){
+  // Bersihin layar
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+
+  // 🎨 Background arena
+  ctx.fillStyle = "#222";
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  // 🔵 Base biru
+  ctx.fillStyle = "blue";
+  ctx.fillRect(50, canvas.height-200, 100,100);
+
+  // 🔴 Base merah
+  ctx.fillStyle = "red";
+  ctx.fillRect(canvas.width-150, 50, 100,100);
+
+  // Kirim data ke Firebase
+  sendData();
+
+  // Gambar semua player
+  for(let id in players){
+    let p = players[id];
+    if(!p) continue;
+
+    // warna berdasarkan tim
+    ctx.fillStyle = p.team === "blue" ? "cyan" : "red";
+
+    // karakter
+    ctx.fillRect(p.x, p.y, 50, 50);
+
+    // nama
+    ctx.fillStyle = "white";
+    ctx.fillText(p.name || "player", p.x, p.y - 10);
+  }
+}
+  
 </script>
 
 </body>
