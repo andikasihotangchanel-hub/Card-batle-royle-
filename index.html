@@ -240,7 +240,18 @@ function update(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
 
   // 🎨 Background arena
-  ctx.drawImage(mapImg, 0, 0, canvas.width, canvas.height);
+  // posisi kamera (ngikut player)
+let camX = myData.x - canvas.width / 2;
+let camY = myData.y - canvas.height / 2;
+
+// gambar map (GESER)
+ctx.drawImage(
+  mapImg,
+  -camX,
+  -camY,
+  canvas.width * 2,
+  canvas.height * 2
+);
 
   // 🔵 Base biru
   ctx.fillStyle = "blue";
@@ -262,11 +273,21 @@ function update(){
     ctx.fillStyle = p.team === "blue" ? "cyan" : "red";
 
     // karakter
-    ctx.fillRect(p.x, p.y, 50, 50);
+    let drawX = p.x - camX;
+let drawY = p.y - camY;
+
+// kalau ada gambar
+if(id === playerId && myData.img){
+  ctx.drawImage(myData.img, drawX, drawY, 60, 60);
+}else{
+  // player lain (sementara kotak)
+  ctx.fillStyle = p.team === "blue" ? "cyan" : "red";
+  ctx.fillRect(drawX, drawY, 50, 50);
+}
 
     // nama
-    ctx.fillStyle = "white";
-    ctx.fillText(p.name || "player", p.x, p.y - 10);
+  ctx.fillStyle = "white";
+ctx.fillText(p.name || "player", drawX, drawY - 10);
   }
 }
   
