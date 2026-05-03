@@ -104,6 +104,15 @@ canvas.height = window.innerHeight;
 let players = {};
 let myData = {x:200, y:200, name:"", power:"", img:null};
 
+  let jungles = [];
+
+for(let i=0;i<30;i++){
+  jungles.push({
+    x: Math.random()*2000,
+    y: Math.random()*2000
+  });
+}
+
 function assignTeam(){
   const teamRef = ref(db, "game/team");
 
@@ -236,6 +245,15 @@ function update(){
   // Bersihin layar
   ctx.clearRect(0,0,canvas.width,canvas.height);
 
+let worldWidth = 2000;
+let worldHeight = 2000;
+
+ctx.fillStyle = "#2e7d32";
+ctx.fillRect(-camX, -camY, worldWidth, worldHeight);
+
+  ctx.fillStyle = "#000";
+ctx.fillRect(0,0,canvas.width,canvas.height);
+  
   // ===== ARENA =====
 
 // 🟩 TANAH
@@ -250,6 +268,9 @@ for(let i=0;i<canvas.width;i+=100){
   ctx.lineTo(i,canvas.height);
   ctx.stroke();
 }
+
+  myData.x = Math.max(0, Math.min(2000, myData.x));
+myData.y = Math.max(0, Math.min(2000, myData.y));
 
 // 🌊 SUNGAI (tengah)
 ctx.fillStyle = "#1976d2";
@@ -274,6 +295,13 @@ for(let i=0;i<20;i++){
   );
   ctx.fill();
 }
+
+  ctx.fillStyle = "#1b5e20";
+jungles.forEach(j=>{
+  ctx.beginPath();
+  ctx.arc(j.x - camX, j.y - camY, 20, 0, Math.PI*2);
+  ctx.fill();
+});
 
   // 🔵 Base biru
 ctx.fillStyle = "blue";
