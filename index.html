@@ -245,14 +245,14 @@ function update(){
   // Bersihin layar
   ctx.clearRect(0,0,canvas.width,canvas.height);
 
+  let camX = myData.x - canvas.width / 2;
+let camY = myData.y - canvas.height / 2;
+
 let worldWidth = 2000;
 let worldHeight = 2000;
 
 ctx.fillStyle = "#2e7d32";
 ctx.fillRect(-camX, -camY, worldWidth, worldHeight);
-
-  ctx.fillStyle = "#000";
-ctx.fillRect(0,0,canvas.width,canvas.height);
   
   // ===== ARENA =====
 
@@ -283,18 +283,6 @@ ctx.closePath();
 ctx.fill();
 
 // 🌿 JUNGLE (random batu/rumput)
-ctx.fillStyle = "#1b5e20";
-for(let i=0;i<20;i++){
-  ctx.beginPath();
-  ctx.arc(
-    Math.random()*canvas.width,
-    Math.random()*canvas.height,
-    20,
-    0,
-    Math.PI*2
-  );
-  ctx.fill();
-}
 
   ctx.fillStyle = "#1b5e20";
 jungles.forEach(j=>{
