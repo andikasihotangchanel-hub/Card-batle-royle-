@@ -141,7 +141,7 @@ document.getElementById("imgInput").onchange = e => {
     myData.img = img;
   };
   reader.readAsDataURL(file);
-
+}
 
 // ▶️ Start game
 window.startGame = () => {
@@ -180,23 +180,6 @@ function sendData(){
 onValue(ref(db, "players"), snapshot=>{
   players = snapshot.val() || {};
 });
-
-// 🎮 Render
-function update(){
-  ctx.clearRect(0,0,canvas.width,canvas.height);
-
-  sendData();
-
-  for(let id in players){
-    let p = players[id];
-
-    ctx.fillStyle = id === playerId ? "lime" : "red";
-    ctx.fillRect(p.x, p.y, 50, 50);
-
-    ctx.fillStyle = "white";
-    ctx.fillText(p.name, p.x, p.y - 10);
-  }
-}
 
 // 🕹️ JOYSTICK
 let stick = document.getElementById("stick");
