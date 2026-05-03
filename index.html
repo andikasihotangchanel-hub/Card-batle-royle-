@@ -1,4 +1,4 @@
-};<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
 <meta charset="UTF-8">
@@ -84,8 +84,8 @@ const firebaseConfig = {
   projectId : "game-card-batle-royle" , 
   storageBucket : "game-card-batle-royle.firebasestorage.app" , 
   messagingSenderId : "985497599472" , 
-  ID aplikasi : "1:985497599472:web:54ddad05e7acdc56deb135" , 
-  measurementId : "G-1DHL78BYNC"
+  appId : "1:985497599472:web:54ddad05e7acdc56deb135" , 
+  measurementId : "G-1DHL78BYNC",
   databaseURL: "https://game-card-batle-royle-default-rtdb.firebaseio.com/",
 };
 
@@ -141,7 +141,7 @@ document.getElementById("imgInput").onchange = e => {
     myData.img = img;
   };
   reader.readAsDataURL(file);
-}
+};
 
 // ▶️ Start game
 window.startGame = () => {
