@@ -72,9 +72,6 @@ input, textarea, button {
 <div id="skills"></div>
 
 <script type="module">
-
-let mapImg = new Image();
-mapImg.src = "e826d3a95e8f17a682b3afb8073ba3a5a902222e67505200f049fdbfb27debcd.png";
   
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
 import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-database.js";
@@ -239,27 +236,52 @@ function update(){
   // Bersihin layar
   ctx.clearRect(0,0,canvas.width,canvas.height);
 
-  // 🎨 Background arena
-  // posisi kamera (ngikut player)
-let camX = myData.x - canvas.width / 2;
-let camY = myData.y - canvas.height / 2;
+  // ===== ARENA =====
 
-// gambar map (GESER)
-ctx.drawImage(
-  mapImg,
-  -camX,
-  -camY,
-  canvas.width * 2,
-  canvas.height * 2
-);
+// 🟩 TANAH
+ctx.fillStyle = "#2e7d32";
+ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // garis arena (biar keren)
+ctx.strokeStyle = "#ffffff22";
+for(let i=0;i<canvas.width;i+=100){
+  ctx.beginPath();
+  ctx.moveTo(i,0);
+  ctx.lineTo(i,canvas.height);
+  ctx.stroke();
+}
+
+// 🌊 SUNGAI (tengah)
+ctx.fillStyle = "#1976d2";
+ctx.beginPath();
+ctx.moveTo(canvas.width/2 - 80, 0);
+ctx.lineTo(canvas.width/2 + 80, 0);
+ctx.lineTo(canvas.width/2 + 40, canvas.height);
+ctx.lineTo(canvas.width/2 - 40, canvas.height);
+ctx.closePath();
+ctx.fill();
+
+// 🌿 JUNGLE (random batu/rumput)
+ctx.fillStyle = "#1b5e20";
+for(let i=0;i<20;i++){
+  ctx.beginPath();
+  ctx.arc(
+    Math.random()*canvas.width,
+    Math.random()*canvas.height,
+    20,
+    0,
+    Math.PI*2
+  );
+  ctx.fill();
+}
 
   // 🔵 Base biru
-  ctx.fillStyle = "blue";
-  ctx.fillRect(50, canvas.height-200, 100,100);
+ctx.fillStyle = "blue";
+ctx.fillRect(50 - camX, canvas.height - 200 - camY, 100,100);
 
-  // 🔴 Base merah
-  ctx.fillStyle = "red";
-  ctx.fillRect(canvas.width-150, 50, 100,100);
+// 🔴 Base merah
+ctx.fillStyle = "red";
+ctx.fillRect(canvas.width - 150 - camX, 50 - camY, 100,100);
 
   // Kirim data ke Firebase
   sendData();
