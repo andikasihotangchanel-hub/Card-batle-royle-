@@ -72,6 +72,10 @@ input, textarea, button {
 <div id="skills"></div>
 
 <script type="module">
+
+let mapImg = new Image();
+mapImg.src = "arena.png";
+  
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-app.js";
 import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/12.12.1/firebase-database.js";
 
@@ -236,8 +240,7 @@ function update(){
   ctx.clearRect(0,0,canvas.width,canvas.height);
 
   // 🎨 Background arena
-  ctx.fillStyle = "#222";
-  ctx.fillRect(0,0,canvas.width,canvas.height);
+  ctx.drawImage(mapImg, 0, 0, canvas.width, canvas.height);
 
   // 🔵 Base biru
   ctx.fillStyle = "blue";
